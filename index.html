@@ -1,57 +1,199 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!doctype html>
+<html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <title>JS Game</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-    <script src="js.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vadym Voronianskyi — Full-Stack · AI · Embedded · PLC</title>
+  <meta name="description" content="Vadym Voronianskyi — engineer since 1996. Full-Stack .NET Core + React, AI, system administration, embedded, industrial PLC, SCADA and HMI.">
+  <meta name="theme-color" content="#06080f">
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="Vadym Voronianskyi — from silicon to AI">
+  <meta property="og:description" content="Full-Stack .NET Core + React · AI · SysAdmin · Embedded · PLC / SCADA / HMI. Coding since 1996.">
+  <meta property="og:image" content="vvv.jpg">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%2306080f'/%3E%3Cpath d='M10 16l10 32 10-32M34 16l10 32 10-32' fill='none' stroke='url(%23g)' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<br/>
-<p>
-    Всего потрачено времени: <span id="vremya">0</span> секунд; <br />
-    Всего потрачено золота: <span id="bablo">0</span> единиц;<br />
-    <b> ЦЕЛЬ ИГРЫ: Постройте и улучшите замок до 2-го уровня потратив минимум времени и золота.</b>
-</p>
-<p align="center">
-    <input id = "start_button" name='button' type='button' value='НАЧАТЬ ИГРУ' onClick='startGame()'>
-</p>
-    <div id="container">
-        <div id="gold"><span id="gold_text">Сейчас в хранилище 0 золота</span>
-            <div id="gold_box"><br /></div>
-        </div>
-        <div id="derevo">Всего дерева:<span id="vsegoDereva">0</span>
-            <input id = "addDerevo" name='button' type='button' value='Увеличить производство' onClick='derevoAdd()'>
-             за <span id="derevoCost">40</span> золота<br />
-        </div>
-        <div id="kamen">Всего камня:<span id="vsegoKamnya">0</span>
-            <input id = "addKamen" name='button' type='button' value='Увеличить производство' onClick='kamenAdd()'>
-             за <span id="kamenCost">90</span> золота<br />
-        </div>
-        <div id="pesok">Всего песка:<span id="vsegoPeska">0</span>
-            <input id = "addPesok" name='button' type='button' value='Увеличить производство' onClick='pesokAdd()'>
-             за <span id="pesokCost">70</span> золота<br />
-        </div>
-        <div id="zamok">
-            Для постройки замка необходимо:<br />
-            Дерево: 600<br />
-            Камень: 200<br />
-            Песок:  400<br /><br />
-            Для 1-го улучшения необходимо:<br />
-            Дерево: 500<br />
-            Камень: 800<br />
-            Песок:  300<br /><br />
-            Для 2-го улучшения необходимо:<br />
-            Дерево: 400<br />
-            Камень: 900<br />
-            Песок:  700<br /><br />
-            <input id = "upCastle" name='button' type='button' value='Улучшить замок' onClick='castleUp()'>
-            <div id="castle">
-                <p  align="center">
-                    ВАШ ЗАМОК:<br /><img id="fotka" src="castle0.jpg" height="300">
-                </p>
-            </div>
-        </div>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <canvas id="matrix" aria-hidden="true"></canvas>
+
+  <header class="nav" id="nav">
+    <a class="logo" href="#top" aria-label="Home">
+      <span class="logo-mark">VV</span><span class="logo-cursor">_</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#about" data-i18n="nav.about">Про мене</a>
+      <a href="#stack" data-i18n="nav.stack">Стек</a>
+      <a href="#skills" data-i18n="nav.skills">Напрямки</a>
+      <a href="#path" data-i18n="nav.path">Шлях</a>
+      <a href="#terminal" data-i18n="nav.terminal">Термінал</a>
+      <a href="#contact" data-i18n="nav.contact">Контакти</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="uk">UA</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
     </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-text">
+        <p class="mono hello"><span class="prompt">&gt;</span> <span data-i18n="hero.hello">Привіт, світ. Я —</span></p>
+        <h1 class="name">
+          <span data-i18n="hero.first">Вадим</span>
+          <span class="grad" data-i18n="hero.last">Воронянський</span>
+        </h1>
+        <p class="role mono"><span id="typed"></span><span class="caret">▍</span></p>
+        <p class="tagline" data-i18n-html="hero.tagline"></p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#contact" data-i18n="hero.cta1">Зв'язатися</a>
+          <a class="btn btn-ghost" href="#terminal"><span class="mono">&gt;_</span> <span data-i18n="hero.cta2">Відкрити термінал</span></a>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="orbit-wrap">
+          <div class="orbit o1" data-r=".36" data-speed="9">
+            <i data-a="0"><b>C#</b></i>
+            <i data-a="72"><b>React</b></i>
+            <i data-a="144"><b>.NET</b></i>
+            <i data-a="216"><b>TS</b></i>
+            <i data-a="288"><b>SQL</b></i>
+          </div>
+          <div class="orbit o2"></div>
+          <div class="orbit o3" data-r=".54" data-speed="-5">
+            <i data-a="0"><b>LLM</b></i>
+            <i data-a="30"><b>PLC</b></i>
+            <i data-a="60"><b>RAG</b></i>
+            <i data-a="90"><b>Linux</b></i>
+            <i data-a="120"><b>SCADA</b></i>
+            <i data-a="150"><b>AI Agents</b></i>
+            <i data-a="180"><b>MCU</b></i>
+            <i data-a="210"><b>Docker</b></i>
+            <i data-a="240"><b>HMI</b></i>
+            <i data-a="270"><b>MCP</b></i>
+            <i data-a="300"><b>Modbus</b></i>
+            <i data-a="330"><b>C/C++</b></i>
+          </div>
+          <div class="photo">
+            <img src="vvv.jpg" alt="" width="754" height="1090">
+          </div>
+          <div class="since mono">since <b>1996</b></div>
+        </div>
+      </div>
+
+      <a class="scroll-hint" href="#stats" aria-label="Scroll"><span></span></a>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats" id="stats">
+      <div class="stat reveal">
+        <div class="stat-num"><span class="count" data-to="years">0</span>+</div>
+        <div class="stat-label" data-i18n="stats.years">років у коді</div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-num"><span class="count" data-to="5">0</span></div>
+        <div class="stat-label" data-i18n="stats.domains">напрямків IT</div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-num"><span class="count" data-to="1996" data-plain>0</span></div>
+        <div class="stat-label" data-i18n="stats.first">перший рядок коду</div>
+      </div>
+      <div class="stat reveal">
+        <div class="stat-num">∞</div>
+        <div class="stat-label" data-i18n="stats.curiosity">цікавості</div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section" id="about">
+      <h2 class="section-title reveal"><span class="mono num">01</span> <span data-i18n="about.title">Про мене</span></h2>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p data-i18n-html="about.p1"></p>
+          <p data-i18n-html="about.p2"></p>
+          <blockquote class="quote" data-i18n="about.quote"></blockquote>
+        </div>
+        <div class="about-card reveal">
+          <div class="code-card">
+            <div class="code-head"><i></i><i></i><i></i><span class="mono">Vadym.cs</span></div>
+<pre class="mono"><code><span class="k">public sealed record</span> <span class="t">Engineer</span>
+{
+  <span class="k">public</span> <span class="t">string</span> Name  = <span class="s">"Vadym Voronianskyi"</span>;
+  <span class="k">public</span> <span class="t">int</span>    Since = <span class="n">1996</span>;
+  <span class="k">public</span> <span class="t">string</span> Main  = <span class="s">".NET Core + React"</span>;
+  <span class="k">public</span> <span class="t">string</span>[] Also =
+  [
+    <span class="s">"AI / LLM / Agents"</span>,
+    <span class="s">"SysAdmin"</span>,
+    <span class="s">"Embedded"</span>,
+    <span class="s">"PLC · SCADA · HMI"</span>
+  ];
+  <span class="k">public</span> <span class="t">bool</span> CanDoIt(<span class="t">Task</span> _)
+    =&gt; <span class="k">true</span>; <span class="c">// always</span>
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STACK: silicon to AI -->
+    <section class="section" id="stack">
+      <h2 class="section-title reveal"><span class="mono num">02</span> <span data-i18n="stack.title">Справжній full-stack</span></h2>
+      <p class="section-lead reveal" data-i18n-html="stack.lead"></p>
+      <div class="layers" id="layers"></div>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="section" id="skills">
+      <h2 class="section-title reveal"><span class="mono num">03</span> <span data-i18n="skills.title">Напрямки</span></h2>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <!-- PATH -->
+    <section class="section" id="path">
+      <h2 class="section-title reveal"><span class="mono num">04</span> <span data-i18n="path.title">Шлях</span></h2>
+      <ol class="timeline" id="timeline"></ol>
+    </section>
+
+    <!-- TERMINAL -->
+    <section class="section" id="terminal">
+      <h2 class="section-title reveal"><span class="mono num">05</span> <span data-i18n="term.title">Поговоримо мовою машин</span></h2>
+      <p class="section-lead reveal" data-i18n-html="term.lead"></p>
+      <div class="term reveal" id="term">
+        <div class="code-head"><i></i><i></i><i></i><span class="mono">vadym@universe: ~</span></div>
+        <div class="term-body mono" id="termBody" aria-live="polite"></div>
+        <form class="term-input mono" id="termForm" autocomplete="off">
+          <label for="termIn" class="term-prompt">vadym@universe:~$</label>
+          <input id="termIn" type="text" spellcheck="false" autocapitalize="off" aria-label="Terminal command">
+        </form>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section contact" id="contact">
+      <h2 class="section-title reveal"><span class="mono num">06</span> <span data-i18n="contact.title">Контакти</span></h2>
+      <div class="contact-box reveal">
+        <h3 class="contact-head" data-i18n="contact.head">Маєте неможливу задачу?</h3>
+        <p data-i18n="contact.text"></p>
+        <div class="contact-links" id="contactLinks"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer mono">
+    <span>© 1996–<span id="year">2026</span> Vadym Voronianskyi</span>
+    <span data-i18n="footer.made">Зроблено вручну: HTML + CSS + JS, без фреймворків.</span>
+    <span class="hint" data-i18n="footer.hint">↑↑↓↓←→←→BA</span>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
