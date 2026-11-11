@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Я знав, що ти й сюди заглянеш 😏
+# I knew you'd check robots.txt too.
+
+Disallow: /secret-plans/
+Disallow: /world-domination.txt
+Disallow: /plc-backdoor/

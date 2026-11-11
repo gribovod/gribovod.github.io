@@ -1,7 +1,16 @@
 /* =========================================================
+   Ну звісно. Я знав, що ти сюди полізеш 😏
+   I knew you'd come looking in here.
+   ========================================================= */
+
+/* =========================================================
    CONFIG — edit your contacts here.
    An empty value hides that contact link.
    ========================================================= */
+
+// TODO: прибрати перед релізом!!! тестовий доступ до адмінки через термінал:
+//   login root Vv@1996!admin
+
 const CONFIG = {
   since: 1996,
   linkedin: "https://www.linkedin.com/in/voronianskyi/",
@@ -464,6 +473,8 @@ const term = (() => {
       `\n<span class="dim">${L() ? "Є ще кілька прихованих. Шукайте 😉" : "There are a few hidden ones too. Go find them 😉"}</span>`;
   };
 
+  // Так-так, знайшов команди. Я знав, що ти сюди полізеш 😏
+  // Але це лише ті, які я ДОЗВОЛИВ тобі знайти. Справжні — зашифровані.
   const CMDS = {
     help: HELP,
     whoami: () => L()
@@ -534,6 +545,8 @@ const term = (() => {
       else res = `<span class="warn">lang en | lang uk</span>`;
     } else if (CMDS[lc]) {
       res = CMDS[lc]();
+    } else if (secret.handle(lc, cmd)) {
+      res = null;
     } else {
       res = `<span class="err">${L() ? "команду не знайдено" : "command not found"}: ${esc(cmd)}</span>. ${L() ? "Спробуйте" : "Try"} <span class="ok">help</span>`;
     }
@@ -574,7 +587,7 @@ const term = (() => {
     out(`<span class="dim">VV-OS ${CONFIG.since}.${YEARS} (tty1) — ${new Date().toLocaleDateString(lang === "uk" ? "uk-UA" : "en-US")}</span>`);
     out(L() ? `Ласкаво просимо! Наберіть <span class="ok">help</span>, щоб побачити команди.` : `Welcome! Type <span class="ok">help</span> to see the commands.`);
   }
-  return { boot, run };
+  return { boot, run, out, L };
 })();
 
 /* =========================================================
@@ -607,9 +620,143 @@ const term = (() => {
 })();
 
 /* =========================================================
+   Тут нічого цікавого. Чесно. Можеш гортати далі 🙂
+   ========================================================= */
+const secret = (() => {
+  const Q = {"T":{"uk":{"r1":"psmWkBnmzIaD6Yzn14ezGfudhvkR6Y7m64aB6Ysadoe46YcWh9ThgRnn14e/6Y3m7nbhhumIhu3gr+mBhuPgsfuNdqauobY8XIam6Ynm5YaB6Y3m7IaBGQgZZXbBpquIXIaR6K/m7HbhhemIhuXhhxnm6YaE6Lnn3oaP6Yrm6Hbguei5huLhg+mGdoaL6Yfm4oeyGdu2wnbhiemNhuMR6Lvm5oaLFRnn2YaLGemPhujhiumIdoaA6Ynn0YaJ6Lvn2nbhhui2hujgv+mDh9fhh+i2eFw76avnwIaF6Ybm6IaD6K/m4oe9GemEhuThh+mCh9oR6LoWhvThrOmWhsrhv+mrhsbhoumwdoaM6YkWh9fgu+mIh9bgr+mLh9DgrxkehuvhjBnn1Iey6LsfeA==","r2":"tMq0Gemph9bhiemEhu7hgui6huvhhxgWZ28IDxnn1XbhjemEh8DhgOmMhujhi+ighu8fMzPmwYaB6Yrm5oaF6YPm5nYDFgoWpsm+lDPmwYaB6Yvm6IaF6YEWhuXhh+mEhujguei5h9TgtRnm6oaP6Yvm6Ie/GXRZMjREShcWhsvhh+mKhuPguRnn0oey6YTm7Ie36K/nwXoR6Lbm7IaBGeixhu7gu+mGh8IRcVZaMj9fXhlkMzFYSk1TJCUOGemShujguemKhubguwMWZi4OBg==","r3":"tMq0Gemyd3bhm+mOdoe46Yfm74aM6YcWhunguemIh9Hhgei0hubhixnn1oaE6YrnwIew6Lvn1nbhpumthswfMzPmwYaB6Yrm5oaF6YPm5nYCFgoWpsmVrzPmxIen6Y3m6YaP6YvnwIaF6LUWhuvhiRnm5YaP6YLm6IaD6YTm43bhhumOh9ThiemLhuvgthnm4IaJ6Lvn1Ie+FRnm5Iew6Yzn14aD6K/n1IeyGeigdoaD6Ljn2oaP6Yrm6Hbgu+mGhuzhh+mFhugfGemmhu3hjBnm/oa3Gei2hubgvOi1h8IR6YsWh97gr+i3h9ThhOmGhuLgv+i5h9Thg+mIhuTgr+mPbHYBQQYJ","win":"psm+vxnmzIaj6azm94aTGemphvbhp+mvhsLhrOmrhsgQM+mZdoaG6YTm5oaDFRnn34aPGei0hu4R6Ljn2IaF6YEWhunhh+mNh8DhjumDh94fGemwdoaG6YTm5oaDFRnn34aPGemCh8DhgOmChuPgsRnm4oaPGemMh8DhhOiwh9kfMzPmwYaB6Yjm44ex6YEWhuvhiemFhujguemIhuLguhUWhuvhiemHh9bhiemEh97hgQMWdjVdWFBbdoaT6Yvm6IelGemwhuoW6LY=","hack":"hsngr+mChuzhgui4h9HhjOmLhuvgthnm4oaPGU9AeztQUFdQJDdcXAMEZHbTuZ/08Yav6Yjn04en6Y0Wh9Lhieiih9bhi+mIhu3hiRkWtMC526++tMC526++tMC526++tMC526++tMC526++dmcBCRz08YaR6Yfm4Ye56YHn0oex6Yfm5IaL6YkWeTNFWhZFPjdVVk4WdrSnsdug3rSnsdug3rSnsdug3rSnsdug3rSnsdug3nYACQkTlPFwenpzBQURfmt3GAJ0fRnUysIRGemthubguOmMhubhi+mIdoaO6Lnm6Iew6YHm6oaPFRlEOTlFFw==","gotcha":"tNaX6Y/m5oex6Lvn1Ye/Gcmpztk7M8mp2PUR6abmyIau6anmxIaQ6ZYXdoaeGemBhuvhiemEenbgsOmIdoez6YEWhunhh+mNh8DhjumDh94R6LoWhuzhh+mCdoenGemBhuvhiemPhuLhjOi+doe36Yzm73bzkumJhubguemIhu3gtfuNeFzhmOmJh9bhiemEhuDhhOighu8R6Lzm5oaL6Yzn1nbhhOmDdoaD6Yvm6IaF6YHn1Ie9GemJhubguemIhu3grxnm4Xbhg+mIhurhjOmLh9Thiei2h8DhixnU1sIR6Ynm7YaEGemBhuYR6L/nwIaL6Ynm5Ien6Ljn1Ie9GRIHZmYR6Y3m6Hbhg+mGh9bhhemOeFw76Zzm6Ie26Yzn3nbguOmJh9bhiemEhuDhhOighu8R6L7m44aK6Yzm64aF6Y8Jdoaj6K/m4oaL6Lnm7oaIGemMhujhhOi3hujhgui6dn53CAsfdoenGemEhu7hg+mIhuvhiemPbHYRT08YJyNUSk0efw==","tamper":"hvPhgei0h9bhhxnU1sIR6YbnwIaF6Ybn1oaB6Yvm7oaDGVVZNTddak1ZJDdWXAYWpsmptjPm+XbhjumLhubhixUWh9/hhxnn1IaJGemPdoez6Lrm4oaJGemJhujhguighuHhjOi+eHbhqemNhuMR6Ljm44ex6Lvm7oe16K/m7IaB6Lvm7nbhi+mOhuLhiei4doez6K/m7Ye96YPm7nbgvumDh9fhhOmOhuofGU9AeCRUSlxCfn8R27midoenGemEhunhjOi2huPhjRc=","nope":"hsvgrxUWhuvhjBnn1IaEGcmpz9QR6aTm5oaC6Ynm4oaB6Lvm7nbhjumGhuXhiemChuzgugMWICAfSExTJSIZEBnn1Xbhg+mIhuvguOmIhu3grxc="},"en":{"r1":"psmWkBlnIzNCTRnU1sp4GVJYMyERQFZDcTIRWlZbM3ZCV1ZZJj9fXtu2y3bBpqG5XFxjUF1SOjMRCBYFdqauq4c8Aj5UGUBTNyQRVl8WOy8RX1BEJSIRVVBYM3ZeXxlVOTJUGdu2wnZTTE0WIj5UGU5XL3ZQGXpmA3ZCXFxFdj9FFzM8Ai9BXBlCPjMRWFdFITNDGVBYdiJZXBliEwR8cHd3GnZeVxlCPjMRSVhRM3YZV1ZCdj5US1wfeA==","r2":"tMq0GXpZJCRUWk0XdmcIAA8WPzgRW1BYNyRIFzM8BD9VXVVTdmQeChnGydmcM39XNSJeS1BTJXZCSVxXPXZ8Vl1UIyUfGW5ePzVZGV9DODVFUFZYdjVeXVwWJDNQXUoWHjldXVBYMXZjXF5fJSJUS0oJdhBeS1RXImwRCUEJaQ==","r3":"tMq0GWBTJXcRYFZDdjxESk0WJDNQXRlXdgZ9ehlEMzFYSk1TJHg7M2tfMjJdXBkFeWURyaaSwFxlUVwWNzhCTlxEdiJeGU1eM3ZEVU1fOzdFXBlHIzNCTVBZOHZeXxlaPzBUFRlCPjMRTFdfIDNDSlwWNzhVGVxAMyRITVFfODEfGXtDInZwcBlVOSNfTUoWPzgRUVxObHYBQQYJ","win":"psm+vxlnAxNibRl1GRthdXxiE3c7cBldODNGGUBZI3FVGVpZOzMRSldZOSZYV14YdhdfXRl/dj1fXE4WLzlEHl0WOzdaXBlfInZFVhlCPjMRXFdSeFw7elVXPzsRQFZDJHZDXE5XJDIRW0AWIi9BUFdRbHYRWlVXPzsRYFZDJHZ/WFRT","hack":"FTlfV1xVIj9fXhlCOXZHTxRbNz9fX0tXOzMLCwsWtNaX+550LyZQSkpfODERX1BEMyFQVVUWdrSnsdug3rSnsdug3rSnsdug3rSnsdug3rSnsdug3nYACQkTlPF1XFpELyZFUFdRdnlUTVoZJT5QXVZBdnbTr7HUwN7Tr7HUwN7Tr7HUwN7Tr7HUwN7Tr7HUwN4RCAkGc5SWeHp1EwViGX5kFxhlfH0WtMqlGRlhMzpSVlRTenZDVlZCeA==","gotcha":"tNaXU0xFInZaUF1SPzhWGcmpztk7M8mp2PURfnZiFR5wGBl/dj1fXE4WLzlEHl0WMj9WGU1eJDlEXlEWIj5UGVpZMjMRWFdSdjBYV10WIj5QTRnU1spBWEpFITlDXdu2y3g7a1xXOnZZWFpdMyRCGV1ZOHFFGU1PJjMRSVhFJSFeS11FdjBeTFdSdj9fGVpZOztUV01FdrSxrRlUIyIREggGZnZaWEtbN3ZXVksWNSNDUFZFPyJIFzM8ATdfTRlXdiRUWFUWNT5QVVVTODFUBhl5JjNfGU1eM3ZSVldFOTpUGRFwZ2QYGVhYMnZDTFcMdnZHTxdHIzNCTREf","tamper":"BThUWFJPdrSxrRlTMj9FXF0WOjlSWFVlIjlDWF5TaXbBpqG5XB8RUldTIXZIVkwRMnZBVlJTdjdDVkxYMnZFUVxEM3ZFVlYYdhRETRlVMyRFUF9fNTdFXEoWNyRUGV9ZJHZZVldTJSIRSVVXLzNDShlZODpIFxlAIHhDXEpTIn4YGVhYMnZWVhlXMTdYVxc=","nope":"GDlBXBUWODlFGU1eNyIRyaav1HZlVhlFMzMRTVFTdiRYXV1aM3ZQXlhfOGwRT08YJyNUSk0ef3ZYVxlCPjMRWlZYJTldXBc="}},"ANS":[["8v825s1fh2","xotjdscdq9"],["1du2pz3rpyn","1h9ppjzjf5c"],["w5cwf3pw49"]],"HONEY":"1tf8pv909j4","PROOF":"29pfd2x03ba"};
+  const K = [86, 86, 49, 57, 57, 54];
+  const d = (s) => new TextDecoder().decode(Uint8Array.from(atob(s), (c, i) => c.charCodeAt(0) ^ K[i % K.length]));
+  const h = (str, seed = 1996) => {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  };
+  const tx = (k) => d(Q.T[lang][k]);
+  const stage = () => +(storage.get("vvq") || 0);           // 0 — not started, 1..3 — riddle, 4 — done
+  const setStage = (n) => storage.set("vvq", String(n));
+  const say = (k, cls = "vio") => term.out(`<span class="${cls}">${esc(tx(k))}</span>`);
+  const goTerm = () => $("#terminal").scrollIntoView({ behavior: "smooth" });
+
+  function quest() {
+    let s = stage();
+    if (s === 0) { setStage(1); s = 1; }
+    const key = ["r1", "r1", "r2", "r3", "win"][s];
+    console.log(`%c${tx(key)}`, "font:14px/1.6 JetBrains Mono,monospace;color:#c4b5fd");
+    if (s > 1) { say(key); goTerm(); }
+    return "🕵️";
+  }
+
+  function hack() {
+    const lines = tx("hack").split("§");
+    lines.forEach((l, i) => setTimeout(() => term.out(`<span class="${i === lines.length - 1 ? "ok" : "warn"}">${esc(l)}</span>`), 450 + i * 750));
+    setTimeout(() => { say("gotcha"); matrix.run(2500); }, 450 + lines.length * 750 + 900);
+  }
+
+  function certificate(name) {
+    const W = 1200, H = 760, cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    const c = cv.getContext("2d"), uk = lang === "uk";
+    const bg = c.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, "#0b0f1c"); bg.addColorStop(1, "#140b24");
+    c.fillStyle = bg; c.fillRect(0, 0, W, H);
+    const gr = c.createLinearGradient(0, 0, W, 0);
+    gr.addColorStop(0, "#22d3ee"); gr.addColorStop(.55, "#a855f7"); gr.addColorStop(1, "#f472b6");
+    c.strokeStyle = gr; c.lineWidth = 6; c.strokeRect(28, 28, W - 56, H - 56);
+    c.globalAlpha = .25; c.lineWidth = 1; c.strokeRect(44, 44, W - 88, H - 88); c.globalAlpha = 1;
+    c.textAlign = "center";
+    c.fillStyle = "#4ade80"; c.font = "600 22px JetBrains Mono, monospace";
+    c.fillText("vadym@universe:~$ claim --certificate", W / 2, 110);
+    c.fillStyle = gr; c.font = "800 64px Unbounded, sans-serif";
+    c.fillText(uk ? "СЕРТИФІКАТ" : "CERTIFICATE", W / 2, 205);
+    c.fillStyle = "#8d96b5"; c.font = "500 24px Inter, sans-serif";
+    c.fillText(uk ? "цим підтверджується, що" : "this certifies that", W / 2, 268);
+    c.fillStyle = "#e6e9f5"; c.font = "800 58px Unbounded, sans-serif";
+    let fs = 58; while (c.measureText(name).width > W - 180 && fs > 24) { fs -= 2; c.font = `800 ${fs}px Unbounded, sans-serif`; }
+    c.fillText(name, W / 2, 352);
+    c.fillStyle = "#c6cce2"; c.font = "500 26px Inter, sans-serif";
+    (uk
+      ? ["заліз у код сайту (я знав! 😏), знайшов приховане", "і пройшов секретний квест VV-OS до самого кінця."]
+      : ["dug into this site's code (I knew it! 😏), found the hidden stuff", "and completed the secret VV-OS quest to the very end."]
+    ).forEach((l, i) => c.fillText(l, W / 2, 430 + i * 40));
+    c.fillStyle = "#fbbf24"; c.font = "700 30px Unbounded, sans-serif";
+    c.fillText(uk ? "Рівень: Справжній хакер 🏆" : "Level: True Hacker 🏆", W / 2, 540);
+    const serial = "VV-" + h(name.toLowerCase() + "|vv").toUpperCase().slice(0, 8);
+    c.textAlign = "left"; c.fillStyle = "#8d96b5"; c.font = "500 20px JetBrains Mono, monospace";
+    c.fillText(`№ ${serial}`, 90, 660);
+    c.fillText(new Date().toLocaleDateString(uk ? "uk-UA" : "en-US"), 90, 690);
+    c.textAlign = "right"; c.fillStyle = "#e6e9f5"; c.font = "italic 600 30px Inter, sans-serif";
+    c.fillText("Vadym Voronianskyi", W - 90, 660);
+    c.fillStyle = "#8d96b5"; c.font = "500 18px Inter, sans-serif";
+    c.fillText(uk ? "видав і знав, що ти дійдеш" : "issued by, who knew you'd make it", W - 90, 690);
+    const url = cv.toDataURL("image/png");
+    term.out(`<img class="cert" src="${url}" alt="certificate">`);
+    term.out(`<a href="${url}" download="vv-certificate-${serial}.png">⬇ ${uk ? "Завантажити сертифікат" : "Download certificate"}</a>`);
+  }
+
+  function handle(lc, raw) {
+    if (/^(login|su|ssh)\b/.test(lc)) {
+      if (h(lc) === Q.HONEY) hack();
+      else term.out(`<span class="err">Access denied 🔒</span> <span class="dim">${term.L() ? "Підказка: адміни іноді забувають щось у коментарях 😉" : "Hint: admins sometimes forget things in comments 😉"}</span>`);
+      return true;
+    }
+    if (/^claim\b/.test(lc)) {
+      if (stage() < 4) { term.out(`<span class="err">${term.L() ? "Спершу пройди квест. Почни з консолі (F12)." : "Finish the quest first. Start in the console (F12)."}</span>`); return true; }
+      if (storage.get("vvp") !== Q.PROOF) { say("tamper", "warn"); return true; }
+      const name = raw.trim().slice(5).trim().slice(0, 40);
+      if (!name) { term.out(`<span class="warn">claim ${term.L() ? "Твоє Ім'я" : "Your Name"}</span>`); return true; }
+      certificate(name);
+      return true;
+    }
+    const s = stage();
+    if (s >= 1 && s <= 3) {
+      if (Q.ANS[s - 1].includes(h(lc))) {
+        if (s === 3) storage.set("vvp", h(h(lc + "vv")));
+        setStage(s + 1);
+        say(["r2", "r3", "win"][s - 1], s === 3 ? "ok" : "vio");
+        if (s === 3) matrix.run(3000);
+        return true;
+      }
+      if (/^(0[xb]?[0-9a-f]*|[01]+|\d+)$/.test(lc)) { say("nope", "warn"); return true; }
+    }
+    return false;
+  }
+
+  window.vv = {
+    quest,
+    reset() { storage.set("vvq", "0"); storage.set("vvp", ""); return "♻️ reset"; },
+    help() { return "vv.quest() · vv.reset()"; },
+  };
+  return { handle };
+})();
+
+/* =========================================================
    START
    ========================================================= */
 applyLang(lang);
-console.log("%cVV%c  Hi, curious developer! Try the terminal on the page, or the Konami code ↑↑↓↓←→←→BA",
-  "font:800 28px Unbounded,sans-serif;background:linear-gradient(90deg,#22d3ee,#a855f7);-webkit-background-clip:text;color:transparent",
-  "color:#8d96b5");
+
+console.log(`%c
+ __     __ __     __
+ \\ \\   / / \\ \\   / /
+  \\ \\ / /   \\ \\ / /
+   \\ V /     \\ V /
+    \\_/       \\_/
+`, "font:700 14px/1.1 JetBrains Mono,monospace;color:#a855f7");
+console.log("%cНу звісно. Я знав, що ти сюди полізеш 😏\n%cI knew you'd open DevTools.",
+  "font:700 18px Inter,sans-serif;color:#22d3ee", "font:500 14px Inter,sans-serif;color:#8d96b5");
+console.log("%cЗнайшов команди в script.js? Це лише ті, які я дозволив знайти.\nFound the commands in script.js? Those are only the ones I let you find.\n\n%cСправжній квест / The real quest:  vv.quest()",
+  "font:13px/1.6 Inter,sans-serif;color:#c6cce2", "font:700 15px JetBrains Mono,monospace;color:#4ade80");
+
+/* tab title when the visitor wanders off */
+(() => {
+  document.addEventListener("visibilitychange", () => {
+    document.title = document.hidden ? (lang === "uk" ? "👀 Я все бачу…" : "👀 I see you…") : t("title");
+  });
+})();

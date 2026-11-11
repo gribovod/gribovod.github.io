@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — Я знав 😏</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306080f'/%3E%3Cpath d='M10 16l10 32 10-32M34 16l10 32 10-32' fill='none' stroke='%23a855f7' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@800&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #06080f; --text: #e6e9f5; --muted: #8d96b5; --line: rgba(148,163,214,.14); --cyan: #22d3ee; --violet: #a855f7; --pink: #f472b6; --green: #4ade80; color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 24px 16px;
+      background: radial-gradient(800px 500px at 80% 0%, rgba(168,85,247,.18), transparent 60%), radial-gradient(700px 500px at 0% 100%, rgba(34,211,238,.12), transparent 60%), var(--bg);
+      color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif;
+    }
+    .box { width: 100%; max-width: 720px; text-align: center; }
+    h1 { margin: 0; font: 800 clamp(90px, 22vw, 180px)/1 Unbounded, sans-serif; background: linear-gradient(100deg, var(--cyan), var(--violet) 55%, var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    h2 { margin: 10px 0 8px; font-size: clamp(20px, 4vw, 28px); }
+    p { color: var(--muted); margin: 0 0 26px; }
+    .term { text-align: left; border-radius: 16px; background: rgba(9,12,23,.92); border: 1px solid var(--line); overflow: hidden; margin: 0 0 28px; }
+    .head { display: flex; gap: 7px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    .head i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; } .head i:nth-child(2) { background: #febc2e; } .head i:nth-child(3) { background: #28c840; }
+    pre { margin: 0; padding: 18px 20px; font: 14px/1.7 "JetBrains Mono", monospace; white-space: pre-wrap; word-break: break-word; color: #cfd5ea; }
+    .g { color: var(--green); } .e { color: #f87171; } .v { color: #c4b5fd; }
+    a.btn { display: inline-block; padding: 14px 24px; border-radius: 14px; font-weight: 600; color: #06080f; text-decoration: none; background: linear-gradient(100deg, var(--cyan), var(--violet) 55%, var(--pink)); }
+  </style>
+</head>
+<body>
+  <main class="box">
+    <h1>404</h1>
+    <h2 id="h">Я знав, що ти сюди полізеш 😏</h2>
+    <p id="p">Такої сторінки немає. Але спроба зарахована.</p>
+    <div class="term">
+      <div class="head"><i></i><i></i><i></i></div>
+      <pre id="out"></pre>
+    </div>
+    <a class="btn" href="/" id="back">← На головну</a>
+  </main>
+  <script>
+    const en = !(navigator.language || "").toLowerCase().startsWith("uk") && !(navigator.language || "").toLowerCase().startsWith("ru");
+    const path = decodeURIComponent(location.pathname);
+    const secret = /secret|world|domination|plc-backdoor|admin|\.env|wp-|config|backup/i.test(path);
+    const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    if (en) {
+      document.documentElement.lang = "en";
+      document.title = "404 — I knew it 😏";
+      document.getElementById("h").textContent = "I knew you'd come looking here 😏";
+      document.getElementById("p").textContent = "This page doesn't exist. But the attempt counts.";
+      document.getElementById("back").textContent = "← Back home";
+    }
+    const lines = secret ? (en ? [
+      `<span class="g">$</span> cat ${esc(path)}`,
+      `<span class="e">Permission denied.</span>`,
+      `Read robots.txt, didn't you? 😏`,
+      `The secret plans aren't on the server. They're in my head.`,
+      ``,
+      `<span class="v">Hint: the real quest starts in the console on the home page → vv.quest()</span>`,
+    ] : [
+      `<span class="g">$</span> cat ${esc(path)}`,
+      `<span class="e">Permission denied.</span>`,
+      `Прочитав robots.txt, так? 😏`,
+      `Секретних планів на сервері немає. Вони в мене в голові.`,
+      ``,
+      `<span class="v">Підказка: справжній квест починається в консолі на головній → vv.quest()</span>`,
+    ]) : (en ? [
+      `<span class="g">$</span> cd ${esc(path)}`,
+      `<span class="e">bash: cd: no such file or directory</span>`,
+      `Even with ${new Date().getFullYear() - 1996} years in IT, I haven't written this page yet.`,
+    ] : [
+      `<span class="g">$</span> cd ${esc(path)}`,
+      `<span class="e">bash: cd: немає такого файлу або каталогу</span>`,
+      `Навіть за ${new Date().getFullYear() - 1996} років в IT я цю сторінку ще не написав.`,
+    ]);
+    const out = document.getElementById("out");
+    lines.forEach((l, i) => setTimeout(() => { out.innerHTML += l + "\n"; }, 300 + i * 450));
+  </script>
+</body>
+</html>

@@ -261,6 +261,7 @@ img { max-width: 100%; display: block; }
 .term-body .cmd::before { content: "vadym@universe:~$ "; color: var(--green); }
 .term-body .ok { color: var(--green); } .term-body .info { color: var(--cyan); } .term-body .warn { color: var(--amber); } .term-body .err { color: #f87171; } .term-body .dim { color: var(--muted); } .term-body .vio { color: #c4b5fd; }
 .term-body a { color: var(--cyan); text-decoration: underline; }
+.term-body .cert { display: block; width: 100%; max-width: 600px; margin: 10px 0 6px; border-radius: 12px; box-shadow: 0 10px 40px -10px rgba(168, 85, 247, .6); }
 .term-input { display: flex; align-items: center; gap: 10px; padding: 12px 20px 18px; font-size: 14px; }
 .term-prompt { color: var(--green); white-space: nowrap; }
 .term-input input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--text); font: inherit; caret-color: var(--cyan); }
